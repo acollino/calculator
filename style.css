@@ -1,0 +1,80 @@
+html{
+  /* margin: 0;
+  padding: 0; */
+  box-sizing: border-box;
+  /* background-color: rgb(86, 124, 124); */
+  background-color: rgb(115, 133, 133);
+}
+
+.rounded{
+  border-radius: 10px;
+}
+
+.calc-container{
+  display: flex;
+  justify-content: space-between;
+  
+  /* margin: 25px; */
+  padding: 25px; 
+}
+
+.output-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 300px;
+}
+
+.output-container div{
+  background-color: rgb(139, 231, 224);
+  border-color: darkslategray;
+  border-style: solid;
+  padding: 20px;
+  font-size: 20px;
+  text-align: right;
+}
+
+#output-history{
+  flex: 1 1 auto;
+}
+
+.central-buttons-container{
+  background-color: rgb(73, 105, 143);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+}
+
+.central-buttons-container button{
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 10px;
+  width: 90px;
+  height: 48px;
+}
+
+.buttons-container{
+  background-color: cadetblue;
+  width: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+}
+
+.buttons-container button{
+  height: 70px;
+  width: 70px;
+  font-size: 28px;
+  font-weight: bold;
+  border-radius: 10px;
+}
+
+#equals{
+  flex-grow: 0.5;
+  flex-basis: 140px;
+}
