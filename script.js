@@ -26,6 +26,7 @@ let needsOperandNext = false;
 let oldNumberPresent = false;
 let currentDecimal = false;
 let currentNegative = false;
+let numOpenParenth = 0;
 
 backButton.addEventListener("click", function(e){
 
@@ -38,6 +39,7 @@ currButton.addEventListener("click", function(e){
   oldNumberPresent = false;
   currentDecimal = false;
   currentNegative = false;
+  numOpenParenth = 0;
 })
 
 allButton.addEventListener("click", function(e){
@@ -48,6 +50,7 @@ allButton.addEventListener("click", function(e){
   oldNumberPresent = false;
   currentDecimal = false;
   currentNegative = false;
+  numOpenParenth = 0;
 })
 
 calcButtons.forEach(button => {
@@ -55,8 +58,14 @@ calcButtons.forEach(button => {
     let buttonText = button.textContent;
     let textToAdd = "";
     if(isNaN(Number(buttonText))){
-      if(buttonText==="+/-"){
-        changePosNeg();
+      if(buttonText==="("){
+        if(oldNumberPresent){
+          current.textContent ="("+current.textContent;
+        }
+        else{
+          textToAdd = "(";
+        }
+        numOpenParenth++;
       }
       else if(buttonText==="="){
         operands = [];
@@ -65,9 +74,11 @@ calcButtons.forEach(button => {
         console.log(`Starting rands: ${operands}, starting rators: ${operators}`);
         equals();
       }
-      else if(buttonText==="1/x"){
-        current.textContent = addParenth(current.textContent);
-        makeInv();
+      else if(buttonText===")"){
+        if(numOpenParenth>0){
+          textToAdd = ")";
+          numOpenParenth--;
+        }
       }
       else if(buttonText==="."){
         decimal = true;
@@ -80,7 +91,6 @@ calcButtons.forEach(button => {
         if(!needsOperand){
           textToAdd = " "+buttonText+" ";
           if(buttonText==="^"){
-            current.textContent = addParenth(current.textContent);
             textToAdd = "^";
           }
         }
@@ -139,10 +149,6 @@ function changePosNeg(){
   }
 }
 
-function makeInv(){
-
-}
-
 function makeDecimal(){
 
 }
@@ -153,14 +159,15 @@ function betweenParenth(index1, index2){
   for(let x=index1; x<=index2; x++){
     subArray[x] = operators[x];
   }
-  let startParenth = subArray.indexOf("(", index1);
-  let endParenth = subArray.lastIndexOf(")", index2);
+  let endParenth = subArray.indexOf(")", index1);
+  let startParenth = subArray.lastIndexOf("(", endParenth);
   // if(startParenth == -1&&endParenth==-1){
   //   expo(index1, index2);
   // }
   // else{
   //   betweenParenth(startParenth+1, endParenth-1);
   // }
+  console.log(`looking between: ${startParenth} and ${endParenth} for indices ${index1}-${index2} in ${subArray}; ${operands} | ${operators}`);
   if(startParenth>=0&&endParenth>=0){
     // operands.splice(index1, 0, "");
     // operands.splice(index2-1, 0, "");
@@ -168,8 +175,10 @@ function betweenParenth(index1, index2){
     operators.splice(startParenth, 1);
     operators.splice(endParenth-1, 1);
     spliceMod += 2;
-    betweenParenth(startParenth, endParenth-2);
+    betweenParenth(startParenth, endParenth-spliceMod);//check for nested ()
+    betweenParenth(index1, index2-spliceMod);//check for other () remaining
   }
+  console.log(`eval: ${index1} and ${index2-spliceMod}; ${operands} | ${operators}`);
   expo(index1, index2-spliceMod);
 }
 
@@ -234,7 +243,6 @@ function multiplyOrDivide(index1, index2){
 function addOrSubtract(index1, index2){
   //console.log(`operators: ${operators}, operands: ${operands}`);
   // if(operators.length>0){
-    console.log(`before adds, between: ${index1} and ${index2}; ${operands} ${operators}`);
     let subArray = [];
     let spliceMod = 0;
     let end = operators.length-1;
@@ -270,9 +278,15 @@ function equals(){
   console.log(`Ending rands: ${operands}, ending rators: ${operators}`);
   let finalIndex = operands.findIndex(element => element!=null&&""+element>0);
   console.log("finalIndex: "+finalIndex);
-  history.textContent = current.textContent+" = "+operands[finalIndex]+"\n"+ interrim;
-  current.textContent = operands[finalIndex];
-  oldNumberPresent = true;
+  if(operands.length==0){
+    history.textContent = current.textContent+" = "+"Error"+"\n"+ interrim;
+    current.textContent = "";
+  }
+  else{
+    history.textContent = current.textContent+" = "+operands[finalIndex]+"\n"+ interrim;
+    current.textContent = operands[finalIndex];
+    oldNumberPresent = true;
+  }
   // history.textContent = current.textContent+" = "+operands[1]+"\n"+ interrim;
   // current.textContent = operands[1];
   // console.log(`operators: ${operators}, operands: ${operands}`);
@@ -347,10 +361,7 @@ function operate(operator, num1, num2){
 }
 
 function defineEquation(){
-  // let array = addParenth(current.textContent.trimEnd()).split(/\s|(\()|(\))|(\^)/).filter(el => el!=null&&el.length>0);
   let array = current.textContent.trimEnd().split(/\s|(\()|(\))|(\^)/).filter(el => el!=null&&el.length>0);
-  console.log(`equationArray: ${array}`);
-  // let y = 1;
   let y = 0;
   let z = 0;
   for(let x=0; x<array.length; x++){
@@ -370,5 +381,8 @@ function defineEquation(){
         y++;
       }
     }
+  }
+  for(let x=numOpenParenth; x>0; x--){
+    operators.push(")");
   }
 }
