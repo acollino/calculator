@@ -71,7 +71,8 @@ calcButtons.forEach(button => {
         operands = [];
         operators = [];
         defineEquation();
-        console.log(`Starting rands: ${operands}, starting rators: ${operators}`);
+        // console.log(`Starting rands: ${operands}, starting rators: ${operators}`);
+        //console.log(pairParenth(operators));
         equals();
       }
       else if(buttonText===")"){
@@ -153,6 +154,39 @@ function makeDecimal(){
 
 }
 
+function pairParenth(array){
+  let starts = [];
+  let pairs = [];
+  for(let x=0; x<array.length; x++){
+    if(array[x] == "("){
+      starts.push(x);
+    }
+    if(array[x] == ")"){
+      pairs.push([starts.pop(), x]);
+    }
+  }
+  return pairs;
+}
+
+// function calcParenth(pairs){
+//   for(let x=0; x<pairs.length; x++){
+//     let index1 = pairs[x][0];
+//     let index2 = pairs[x][1];
+//     doCalc(index1+1, index2-1);
+//   //   operators.splice(pairs[x][0], 1);
+//   //   operators.splice(pairs[x][1]-1, 1);
+//   //   pairs[x][1]--;
+//   // }
+//   // pairs.forEach(pair => function(){ 
+//   }
+// }
+
+// function doCalc(index1, index2){
+//   let firstNum = equation[index1];
+//   let secNum = equation[index2];
+//   operate(operands[0], firstNum, secNum);
+// }
+
 function betweenParenth(index1, index2){
   let subArray = [];
   let spliceMod = 0;
@@ -160,14 +194,17 @@ function betweenParenth(index1, index2){
     subArray[x] = operators[x];
   }
   let endParenth = subArray.indexOf(")", index1);
-  let startParenth = subArray.lastIndexOf("(", endParenth);
+  let startParenth = subArray.lastIndexOf("(", endParenth); //breaks on 
+  //nested (, stable most other cases
   // if(startParenth == -1&&endParenth==-1){
   //   expo(index1, index2);
   // }
   // else{
   //   betweenParenth(startParenth+1, endParenth-1);
   // }
-  console.log(`looking between: ${startParenth} and ${endParenth} for indices ${index1}-${index2} in ${subArray}; ${operands} | ${operators}`);
+  // let startParenth = subArray.indexOf("(", index1);
+  // let endParenth = subArray.lastIndexOf(")", index2);
+  // console.log(`looking between: ${startParenth} and ${endParenth} for indices ${index1}-${index2} in ${subArray}; ${operands} | ${operators}`);
   if(startParenth>=0&&endParenth>=0){
     // operands.splice(index1, 0, "");
     // operands.splice(index2-1, 0, "");
@@ -178,7 +215,7 @@ function betweenParenth(index1, index2){
     betweenParenth(startParenth, endParenth-spliceMod);//check for nested ()
     betweenParenth(index1, index2-spliceMod);//check for other () remaining
   }
-  console.log(`eval: ${index1} and ${index2-spliceMod}; ${operands} | ${operators}`);
+  // console.log(`eval: ${index1} and ${index2-spliceMod}; ${operands} | ${operators}`);
   expo(index1, index2-spliceMod);
 }
 
@@ -274,10 +311,11 @@ function addOrSubtract(index1, index2){
 
 function equals(){
   let interrim = history.textContent;
-  betweenParenth(0, operators.length-1);
-  console.log(`Ending rands: ${operands}, ending rators: ${operators}`);
+  betweenParenth(0, operators.length-1); //initial try
+  //calcParenth(pairParenth(equation));
+  // console.log(`Ending rands: ${operands}, ending rators: ${operators}`);
   let finalIndex = operands.findIndex(element => element!=null&&""+element>0);
-  console.log("finalIndex: "+finalIndex);
+  // console.log("finalIndex: "+finalIndex);
   if(operands.length==0){
     history.textContent = current.textContent+" = "+"Error"+"\n"+ interrim;
     current.textContent = "";
@@ -309,6 +347,11 @@ function equals(){
   //   return (element.search(regex)>=0);
   // });
   // operate(textArray[pos], Number(textArray[pos-1]), Number(textArray[pos+1]));
+  equation.splice(0, 0, "(");
+  equation.push(")");
+  console.log(equation);
+  betterCalc();
+  console.log(equation);
 }
 
 function updateOutput(newText){
@@ -362,6 +405,7 @@ function operate(operator, num1, num2){
 
 function defineEquation(){
   let array = current.textContent.trimEnd().split(/\s|(\()|(\))|(\^)/).filter(el => el!=null&&el.length>0);
+  equation = array;
   let y = 0;
   let z = 0;
   for(let x=0; x<array.length; x++){
@@ -385,4 +429,45 @@ function defineEquation(){
   for(let x=numOpenParenth; x>0; x--){
     operators.push(")");
   }
+}
+
+function betterCalc(){
+  let targetPair = findInnerMostParenth();
+  let subSection = [];
+  for(let x=targetPair[0]+1; x<targetPair[1]; x++){
+    subSection.push(equation[x]);
+  }
+  let updatedSection = orderOps(subSection);
+  equation.splice(targetPair[0], targetPair[1]-targetPair[0]+1, ...updatedSection);
+  if(equation.length>1){
+    betterCalc();
+  }
+}
+
+function findInnerMostParenth(){
+  let endPar = equation.indexOf(")");
+  let firstPar = equation.lastIndexOf("(", endPar);
+  return [firstPar, endPar];
+}
+
+function orderOps(array){
+  let updatedArray = array;
+  updatedArray = doCalc(updatedArray, "^");
+  updatedArray = doCalc(updatedArray, "*");
+  updatedArray = doCalc(updatedArray, "/");
+  updatedArray = doCalc(updatedArray, "+");
+  updatedArray = doCalc(updatedArray, "-");
+  return updatedArray;
+}
+
+function doCalc(array, value){
+  let updatedArray = array;
+  let newVal = 0;
+  let index = -1;
+  index = updatedArray.indexOf(value);
+  if(index>0){
+    newVal = operate(value, Number(updatedArray[index-1]), Number(updatedArray[index+1]));
+    updatedArray.splice(index-1, 3, newVal);
+  }
+  return updatedArray;
 }
