@@ -5,21 +5,21 @@ const allButton = document.querySelector("#all-button");;
 const current = document.querySelector("#output-current");
 const history = document.querySelector("#output-history");
 
-function operation(num1, num2, oper){
-  this.num1 = num1;
-  this.num2 =num2;
-  this.oper = oper;
-  this.solve = function(){
-    return operate(oper, num1, num2);
-  }
-};
+// function operation(num1, num2, oper){
+//   this.num1 = num1;
+//   this.num2 =num2;
+//   this.oper = oper;
+//   this.solve = function(){
+//     return operate(oper, num1, num2);
+//   }
+// };
 
 let equation = [];
 
-let operands = [];
-let operators = [];
-let indexStart=0;
-let indexEnd=0;
+// let operands = [];
+// let operators = [];
+// let indexStart=0;
+// let indexEnd=0;
 let currentOperand = "";
 let needsOperand = true;
 let needsOperandNext = false;
@@ -116,57 +116,66 @@ calcButtons.forEach(button => {
   });
 });
 
-function addParenth(input){
-  if(input.length>0){
-    return "("+input + ")";
-  } 
-}
+// function addParenth(input){
+//   if(input.length>0){
+//     return "("+input + ")";
+//   } 
+// }
+
+// function removeOperator(){
+//   let curText = current.textContent.trim();
+//   if(curText.indexOf("(")==0){
+//     current.textContent = curText.substring(1, curText.length-2);
+//   }
+//   else{
+//     let index = curText.lastIndexOf(" ");//last whitespace will be before operand
+//     if(index>0){
+//       current.textContent = curText.substring(0, index);
+//     }
+//   }
+// }
 
 function removeOperator(){
   let curText = current.textContent.trim();
-  if(curText.indexOf("(")==0){
-    current.textContent = curText.substring(1, curText.length-2);
+  curText = curText.substring(0, curText.length-1);
+  if(curText.lastIndexOf(" ")==curText.length-2){
+    curText += " ";
   }
-  else{
-    let index = curText.lastIndexOf(" ");//last whitespace will be before operand
-    if(index>0){
-      current.textContent = curText.substring(0, index);
-    }
-  }
+  current.textContent = curText;
 }
 
-function changePosNeg(){
-  let curText = current.textContent;
-  if(curText.length == 0){
-    curText = "-";
-  }
-  else{
-    if(curText.charAt(0)==='-'){
-      current.textContent = curText.substring(1);
-    }
-    else{
-      current.textContent = "-"+curText.trim();
-    }
-  }
-}
+// function changePosNeg(){
+//   let curText = current.textContent;
+//   if(curText.length == 0){
+//     curText = "-";
+//   }
+//   else{
+//     if(curText.charAt(0)==='-'){
+//       current.textContent = curText.substring(1);
+//     }
+//     else{
+//       current.textContent = "-"+curText.trim();
+//     }
+//   }
+// }
 
 function makeDecimal(){
 
 }
 
-function pairParenth(array){
-  let starts = [];
-  let pairs = [];
-  for(let x=0; x<array.length; x++){
-    if(array[x] == "("){
-      starts.push(x);
-    }
-    if(array[x] == ")"){
-      pairs.push([starts.pop(), x]);
-    }
-  }
-  return pairs;
-}
+// function pairParenth(array){
+//   let starts = [];
+//   let pairs = [];
+//   for(let x=0; x<array.length; x++){
+//     if(array[x] == "("){
+//       starts.push(x);
+//     }
+//     if(array[x] == ")"){
+//       pairs.push([starts.pop(), x]);
+//     }
+//   }
+//   return pairs;
+// }
 
 // function calcParenth(pairs){
 //   for(let x=0; x<pairs.length; x++){
@@ -187,172 +196,172 @@ function pairParenth(array){
 //   operate(operands[0], firstNum, secNum);
 // }
 
-function betweenParenth(index1, index2){
-  let subArray = [];
-  let spliceMod = 0;
-  for(let x=index1; x<=index2; x++){
-    subArray[x] = operators[x];
-  }
-  let endParenth = subArray.indexOf(")", index1);
-  let startParenth = subArray.lastIndexOf("(", endParenth); //breaks on 
-  //nested (, stable most other cases
-  // if(startParenth == -1&&endParenth==-1){
-  //   expo(index1, index2);
-  // }
-  // else{
-  //   betweenParenth(startParenth+1, endParenth-1);
-  // }
-  // let startParenth = subArray.indexOf("(", index1);
-  // let endParenth = subArray.lastIndexOf(")", index2);
-  // console.log(`looking between: ${startParenth} and ${endParenth} for indices ${index1}-${index2} in ${subArray}; ${operands} | ${operators}`);
-  if(startParenth>=0&&endParenth>=0){
-    // operands.splice(index1, 0, "");
-    // operands.splice(index2-1, 0, "");
-    // betweenParenth(startParenth+1, endParenth-1);
-    operators.splice(startParenth, 1);
-    operators.splice(endParenth-1, 1);
-    spliceMod += 2;
-    betweenParenth(startParenth, endParenth-spliceMod);//check for nested ()
-    betweenParenth(index1, index2-spliceMod);//check for other () remaining
-  }
-  // console.log(`eval: ${index1} and ${index2-spliceMod}; ${operands} | ${operators}`);
-  expo(index1, index2-spliceMod);
-}
+// function betweenParenth(index1, index2){
+//   let subArray = [];
+//   let spliceMod = 0;
+//   for(let x=index1; x<=index2; x++){
+//     subArray[x] = operators[x];
+//   }
+//   let endParenth = subArray.indexOf(")", index1);
+//   let startParenth = subArray.lastIndexOf("(", endParenth); //breaks on 
+//   //nested (, stable most other cases
+//   // if(startParenth == -1&&endParenth==-1){
+//   //   expo(index1, index2);
+//   // }
+//   // else{
+//   //   betweenParenth(startParenth+1, endParenth-1);
+//   // }
+//   // let startParenth = subArray.indexOf("(", index1);
+//   // let endParenth = subArray.lastIndexOf(")", index2);
+//   // console.log(`looking between: ${startParenth} and ${endParenth} for indices ${index1}-${index2} in ${subArray}; ${operands} | ${operators}`);
+//   if(startParenth>=0&&endParenth>=0){
+//     // operands.splice(index1, 0, "");
+//     // operands.splice(index2-1, 0, "");
+//     // betweenParenth(startParenth+1, endParenth-1);
+//     operators.splice(startParenth, 1);
+//     operators.splice(endParenth-1, 1);
+//     spliceMod += 2;
+//     betweenParenth(startParenth, endParenth-spliceMod);//check for nested ()
+//     betweenParenth(index1, index2-spliceMod);//check for other () remaining
+//   }
+//   // console.log(`eval: ${index1} and ${index2-spliceMod}; ${operands} | ${operators}`);
+//   expo(index1, index2-spliceMod);
+// }
 
-function expo(index1, index2){
-    let subArray = [];
-    let end = operators.length-1;
-    let spliceMod = 0;
-    if(index2<end){
-      end = index2;
-    }
-    for(let x=index1; x<=end; x++){
-      subArray[x] = operators[x];
-    }
-    pos = -1;
-    pos = subArray.findIndex(element => {
-          let regex = /\^/;
-          return (element!=null&&(element.search(regex)>=0));
-    });
-    if(pos>=0){
-      // console.log(`Pos: ${pos-2}, Operand1: ${operands[pos-2]}, Operand2: ${operands[pos-1]}`);
-      ans = operate(operators[pos], operands[pos], operands[pos+1]);
-      operands.splice(pos, 2, ans);
-      // operands.splice(pos, 0, "");
-      operators.splice(pos, 1);
-      spliceMod++;
-      expo(index1, index2-spliceMod);
-      //maybe instead of all the splicing shenanigans I just remove parenths once the internal stuff is done
-    }
-    multiplyOrDivide(index1, index2-spliceMod);
-}
+// function expo(index1, index2){
+//     let subArray = [];
+//     let end = operators.length-1;
+//     let spliceMod = 0;
+//     if(index2<end){
+//       end = index2;
+//     }
+//     for(let x=index1; x<=end; x++){
+//       subArray[x] = operators[x];
+//     }
+//     pos = -1;
+//     pos = subArray.findIndex(element => {
+//           let regex = /\^/;
+//           return (element!=null&&(element.search(regex)>=0));
+//     });
+//     if(pos>=0){
+//       // console.log(`Pos: ${pos-2}, Operand1: ${operands[pos-2]}, Operand2: ${operands[pos-1]}`);
+//       ans = operate(operators[pos], operands[pos], operands[pos+1]);
+//       operands.splice(pos, 2, ans);
+//       // operands.splice(pos, 0, "");
+//       operators.splice(pos, 1);
+//       spliceMod++;
+//       expo(index1, index2-spliceMod);
+//       //maybe instead of all the splicing shenanigans I just remove parenths once the internal stuff is done
+//     }
+//     multiplyOrDivide(index1, index2-spliceMod);
+// }
 
 
-function multiplyOrDivide(index1, index2){
-  // console.log(`operators: ${operators}, operands: ${operands}`);
-  // if(operators.length>0){
-    let subArray = [];
-    let spliceMod = 0;
-    let end = operators.length-1;
-    if(index2<end){
-      end = index2;
-    }
-    for(let x=index1; x<=end; x++){
-      subArray[x] = operators[x];
-    }
-    pos = -1;
-    pos = subArray.findIndex(element => {
-          let regex = /\*|\//;
-          return (element!=null&&(element.search(regex)>=0));
-    });
-    if(pos>=0){
-      // ans = operate(operators[pos], operands[pos], operands[pos-1]);
-      ans = operate(operators[pos], operands[pos], operands[pos+1]);
-      operands.splice(pos, 2, ans);
-      operators.splice(pos, 1);
-      spliceMod++;
-      multiplyOrDivide(index1, index2-spliceMod);
-    }
-    addOrSubtract(index1, index2-spliceMod);
-  // }
-}
+// function multiplyOrDivide(index1, index2){
+//   // console.log(`operators: ${operators}, operands: ${operands}`);
+//   // if(operators.length>0){
+//     let subArray = [];
+//     let spliceMod = 0;
+//     let end = operators.length-1;
+//     if(index2<end){
+//       end = index2;
+//     }
+//     for(let x=index1; x<=end; x++){
+//       subArray[x] = operators[x];
+//     }
+//     pos = -1;
+//     pos = subArray.findIndex(element => {
+//           let regex = /\*|\//;
+//           return (element!=null&&(element.search(regex)>=0));
+//     });
+//     if(pos>=0){
+//       // ans = operate(operators[pos], operands[pos], operands[pos-1]);
+//       ans = operate(operators[pos], operands[pos], operands[pos+1]);
+//       operands.splice(pos, 2, ans);
+//       operators.splice(pos, 1);
+//       spliceMod++;
+//       multiplyOrDivide(index1, index2-spliceMod);
+//     }
+//     addOrSubtract(index1, index2-spliceMod);
+//   // }
+// }
 
-function addOrSubtract(index1, index2){
-  //console.log(`operators: ${operators}, operands: ${operands}`);
-  // if(operators.length>0){
-    let subArray = [];
-    let spliceMod = 0;
-    let end = operators.length-1;
-    if(index2<end){
-      end = index2;
-    }
-    for(let x=index1; x<=end; x++){
-      subArray[x] = operators[x];
-    }
-    pos = -1;
-    pos = subArray.findIndex(element => {
-          let regex = /\+|\-/;
-          return (element!=null&&(element.search(regex)>=0));
-    });
-    // console.log(`between: ${index1} and ${index2}; ${operands} ${operators}`);
-    if(pos>=0){
-      // ans = operate(operators[pos], operands[pos], operands[pos-1]);
-      ans = operate(operators[pos], operands[pos], operands[pos+1]);
-      operands.splice(pos, 2, ans);
-      operators.splice(pos, 1);
-      spliceMod++;
-      addOrSubtract(index1, index2-spliceMod);
-    }
-  // }
-  // else{
-  //   return;
-  // }
-}
+// function addOrSubtract(index1, index2){
+//   //console.log(`operators: ${operators}, operands: ${operands}`);
+//   // if(operators.length>0){
+//     let subArray = [];
+//     let spliceMod = 0;
+//     let end = operators.length-1;
+//     if(index2<end){
+//       end = index2;
+//     }
+//     for(let x=index1; x<=end; x++){
+//       subArray[x] = operators[x];
+//     }
+//     pos = -1;
+//     pos = subArray.findIndex(element => {
+//           let regex = /\+|\-/;
+//           return (element!=null&&(element.search(regex)>=0));
+//     });
+//     // console.log(`between: ${index1} and ${index2}; ${operands} ${operators}`);
+//     if(pos>=0){
+//       // ans = operate(operators[pos], operands[pos], operands[pos-1]);
+//       ans = operate(operators[pos], operands[pos], operands[pos+1]);
+//       operands.splice(pos, 2, ans);
+//       operators.splice(pos, 1);
+//       spliceMod++;
+//       addOrSubtract(index1, index2-spliceMod);
+//     }
+//   // }
+//   // else{
+//   //   return;
+//   // }
+// }
 
-function equals(){
-  let interrim = history.textContent;
-  betweenParenth(0, operators.length-1); //initial try
-  //calcParenth(pairParenth(equation));
-  // console.log(`Ending rands: ${operands}, ending rators: ${operators}`);
-  let finalIndex = operands.findIndex(element => element!=null&&""+element>0);
-  // console.log("finalIndex: "+finalIndex);
-  if(operands.length==0){
-    history.textContent = current.textContent+" = "+"Error"+"\n"+ interrim;
-    current.textContent = "";
-  }
-  else{
-    history.textContent = current.textContent+" = "+operands[finalIndex]+"\n"+ interrim;
-    current.textContent = operands[finalIndex];
-    oldNumberPresent = true;
-  }
-  // history.textContent = current.textContent+" = "+operands[1]+"\n"+ interrim;
-  // current.textContent = operands[1];
-  // console.log(`operators: ${operators}, operands: ${operands}`);
-  //console.log(operands);
-  // pos = -1;
-  // pos = textArray.findIndex(element => {
-  //      let regex = /\^/;
-  //      return (element.search(regex)>=0);
-  // });
-  // if(pos>=0){
+// function equals(){
+//   let interrim = history.textContent;
+//   betweenParenth(0, operators.length-1); //initial try
+//   //calcParenth(pairParenth(equation));
+//   // console.log(`Ending rands: ${operands}, ending rators: ${operators}`);
+//   let finalIndex = operands.findIndex(element => element!=null&&""+element>0);
+//   // console.log("finalIndex: "+finalIndex);
+//   if(operands.length==0){
+//     history.textContent = current.textContent+" = "+"Error"+"\n"+ interrim;
+//     current.textContent = "";
+//   }
+//   else{
+//     history.textContent = current.textContent+" = "+operands[finalIndex]+"\n"+ interrim;
+//     current.textContent = operands[finalIndex];
+//     oldNumberPresent = true;
+//   }
+//   // history.textContent = current.textContent+" = "+operands[1]+"\n"+ interrim;
+//   // current.textContent = operands[1];
+//   // console.log(`operators: ${operators}, operands: ${operands}`);
+//   //console.log(operands);
+//   // pos = -1;
+//   // pos = textArray.findIndex(element => {
+//   //      let regex = /\^/;
+//   //      return (element.search(regex)>=0);
+//   // });
+//   // if(pos>=0){
 
-  // }
-  // for(let x=0; x<operators.length; x++){
+//   // }
+//   // for(let x=0; x<operators.length; x++){
 
-  // }
-  // let curText = current.textContent;
-  // let textArray = curText.split(" ");
-  // let pos = textArray.findIndex(element => {
-  //   let regex = /\*|\/|\-|\+|\^/g;
-  //   return (element.search(regex)>=0);
-  // });
-  // operate(textArray[pos], Number(textArray[pos-1]), Number(textArray[pos+1]));
-  equation.splice(0, 0, "(");
-  equation.push(")");
-  console.log(equation);
-  betterCalc();
-  console.log(equation);
-}
+//   // }
+//   // let curText = current.textContent;
+//   // let textArray = curText.split(" ");
+//   // let pos = textArray.findIndex(element => {
+//   //   let regex = /\*|\/|\-|\+|\^/g;
+//   //   return (element.search(regex)>=0);
+//   // });
+//   // operate(textArray[pos], Number(textArray[pos-1]), Number(textArray[pos+1]));
+//   equation.splice(0, 0, "(");
+//   equation.push(")");
+//   console.log(equation);
+//   betterCalc();
+//   console.log(equation);
+// }
 
 function updateOutput(newText){
   current.textContent += newText;
@@ -403,32 +412,36 @@ function operate(operator, num1, num2){
   // oldNumberPresent = true;
 }
 
+// function defineEquation(){
+//   let array = current.textContent.trimEnd().split(/\s|(\()|(\))|(\^)/).filter(el => el!=null&&el.length>0);
+//   equation = array;
+//   let y = 0;
+//   let z = 0;
+//   for(let x=0; x<array.length; x++){
+//     let arrayPos = array[x];
+//     if(arrayPos.charAt(0)=="-"&&arrayPos.length>1){
+//       operands[y] = Number(arrayPos.substring(1))*(-1);
+//       y++;
+//     }
+//     else{
+//       let regexResult = arrayPos.search(/\*|\/|\-|\+|\^|\(|\)/g);
+//       if(regexResult>=0){
+//         operators[z]= arrayPos;
+//         z++;
+//       }
+//       else{
+//         operands[y] = Number(arrayPos.substring(0));
+//         y++;
+//       }
+//     }
+//   }
+//   for(let x=numOpenParenth; x>0; x--){
+//     operators.push(")");
+//   }
+// }
+
 function defineEquation(){
-  let array = current.textContent.trimEnd().split(/\s|(\()|(\))|(\^)/).filter(el => el!=null&&el.length>0);
-  equation = array;
-  let y = 0;
-  let z = 0;
-  for(let x=0; x<array.length; x++){
-    let arrayPos = array[x];
-    if(arrayPos.charAt(0)=="-"&&arrayPos.length>1){
-      operands[y] = Number(arrayPos.substring(1))*(-1);
-      y++;
-    }
-    else{
-      let regexResult = arrayPos.search(/\*|\/|\-|\+|\^|\(|\)/g);
-      if(regexResult>=0){
-        operators[z]= arrayPos;
-        z++;
-      }
-      else{
-        operands[y] = Number(arrayPos.substring(0));
-        y++;
-      }
-    }
-  }
-  for(let x=numOpenParenth; x>0; x--){
-    operators.push(")");
-  }
+  equation = current.textContent.trimEnd().split(/\s|(\()|(\))|(\^)/).filter(el => el!=null&&el.length>0);
 }
 
 function betterCalc(){
@@ -452,11 +465,21 @@ function findInnerMostParenth(){
 
 function orderOps(array){
   let updatedArray = array;
-  updatedArray = doCalc(updatedArray, "^");
-  updatedArray = doCalc(updatedArray, "*");
-  updatedArray = doCalc(updatedArray, "/");
-  updatedArray = doCalc(updatedArray, "+");
-  updatedArray = doCalc(updatedArray, "-");
+  while(array.indexOf("^")!=-1){
+    updatedArray = doCalc(updatedArray, "^");
+  }
+  while(array.indexOf("*")!=-1){
+    updatedArray = doCalc(updatedArray, "*");
+  }
+  while(array.indexOf("/")!=-1){
+    updatedArray = doCalc(updatedArray, "/");
+  }
+  while(array.indexOf("+")!=-1){
+    updatedArray = doCalc(updatedArray, "+");
+  }
+  while(array.indexOf("-")!=-1){
+    updatedArray = doCalc(updatedArray, "-");
+  }
   return updatedArray;
 }
 
@@ -470,4 +493,23 @@ function doCalc(array, value){
     updatedArray.splice(index-1, 3, newVal);
   }
   return updatedArray;
+}
+
+function equals(){
+  let interrim = history.textContent;
+  equation.splice(0, 0, "(");
+  equation.push(")");
+  console.log(equation);
+  betterCalc();
+  console.log(equation);
+  let finalIndex = equation.findIndex(element => element!=null&&""+element>0);
+  if(equation.length==0){
+    history.textContent = current.textContent+" = "+"Error"+"\n"+ interrim;
+    current.textContent = "";
+  }
+  else{
+    history.textContent = current.textContent+" = "+equation[finalIndex]+"\n"+ interrim;
+    current.textContent = equation[finalIndex];
+    oldNumberPresent = true;
+  }
 }
