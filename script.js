@@ -68,8 +68,8 @@ calcButtons.forEach(button => {
         numOpenParenth++;
       }
       else if(buttonText==="="){
-        operands = [];
-        operators = [];
+        // operands = [];
+        // operators = [];
         defineEquation();
         // console.log(`Starting rands: ${operands}, starting rators: ${operators}`);
         //console.log(pairParenth(operators));
@@ -508,6 +508,9 @@ function equals(){
     current.textContent = "";
   }
   else{
+    if(!Number.isInteger(equation[finalIndex])){
+      equation[finalIndex] = equation[finalIndex].toFixed(2);
+    }
     history.textContent = current.textContent+" = "+equation[finalIndex]+"\n"+ interrim;
     current.textContent = equation[finalIndex];
     oldNumberPresent = true;
