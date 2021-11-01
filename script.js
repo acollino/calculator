@@ -5,26 +5,12 @@ const allButton = document.querySelector("#all-button");;
 const current = document.querySelector("#output-current");
 const history = document.querySelector("#output-history");
 
-// function operation(num1, num2, oper){
-//   this.num1 = num1;
-//   this.num2 =num2;
-//   this.oper = oper;
-//   this.solve = function(){
-//     return operate(oper, num1, num2);
-//   }
-// };
-
 let equation = [];
-
-// let operands = [];
-// let operators = [];
-// let indexStart=0;
-// let indexEnd=0;
 let currentOperand = "";
 let needsOperand = true;
 let needsOperandNext = false;
 let oldNumberPresent = false;
-let currentDecimal = false;
+let decimalPossible = true;
 let currentNegative = false;
 let numOpenParenth = 0;
 
@@ -37,20 +23,22 @@ currButton.addEventListener("click", function(e){
   needsOperand = true;
   needsOperandNext = false;
   oldNumberPresent = false;
-  currentDecimal = false;
+  decimalPossible = true;
   currentNegative = false;
   numOpenParenth = 0;
+  equation = [];
 })
 
 allButton.addEventListener("click", function(e){
   current.textContent = "";
-  history.textContent = "";
+  history.textContent = "";//removeChildren?
   needsOperand = true;
   needsOperandNext = false;
   oldNumberPresent = false;
-  currentDecimal = false;
+  decimalPossible = true;
   currentNegative = false;
   numOpenParenth = 0;
+  equation = [];
 })
 
 calcButtons.forEach(button => {
@@ -66,35 +54,44 @@ calcButtons.forEach(button => {
           textToAdd = "(";
         }
         numOpenParenth++;
+        decimalPossible = true;
       }
       else if(buttonText==="="){
-        // operands = [];
-        // operators = [];
         defineEquation();
-        // console.log(`Starting rands: ${operands}, starting rators: ${operators}`);
-        //console.log(pairParenth(operators));
         equals();
       }
       else if(buttonText===")"){
         if(numOpenParenth>0){
           textToAdd = ")";
           numOpenParenth--;
+          decimalPossible = true;
         }
       }
       else if(buttonText==="."){
-        decimal = true;
-        makeDecimal();
+        if(decimalPossible){
+          if(needsOperand||needsOperandNext){
+            updateOutput("0");
+          }
+          defineEquation();
+          decimalPossible = false;
+          makeDecimal();
+          textToAdd = ".";
+          oldNumberPresent = false;
+        }
       }
       else{
         if(needsOperandNext){
           removeOperator();
         }
-        if(!needsOperand){
-          textToAdd = " "+buttonText+" ";
-          if(buttonText==="^"){
-            textToAdd = "^";
-          }
+        if(needsOperand){
+          updateOutput("0");
+          needsOperand = false;
         }
+        textToAdd = " "+buttonText+" ";
+        if(buttonText==="^"){
+          textToAdd = "^";
+        }
+        decimalPossible = true;
         needsOperandNext = true;
         oldNumberPresent = false;
       }
@@ -116,25 +113,6 @@ calcButtons.forEach(button => {
   });
 });
 
-// function addParenth(input){
-//   if(input.length>0){
-//     return "("+input + ")";
-//   } 
-// }
-
-// function removeOperator(){
-//   let curText = current.textContent.trim();
-//   if(curText.indexOf("(")==0){
-//     current.textContent = curText.substring(1, curText.length-2);
-//   }
-//   else{
-//     let index = curText.lastIndexOf(" ");//last whitespace will be before operand
-//     if(index>0){
-//       current.textContent = curText.substring(0, index);
-//     }
-//   }
-// }
-
 function removeOperator(){
   let curText = current.textContent.trim();
   curText = curText.substring(0, curText.length-1);
@@ -144,301 +122,70 @@ function removeOperator(){
   current.textContent = curText;
 }
 
-// function changePosNeg(){
-//   let curText = current.textContent;
-//   if(curText.length == 0){
-//     curText = "-";
-//   }
-//   else{
-//     if(curText.charAt(0)==='-'){
-//       current.textContent = curText.substring(1);
-//     }
-//     else{
-//       current.textContent = "-"+curText.trim();
-//     }
-//   }
-// }
-
 function makeDecimal(){
-
+  let index = getLastOperandIndex();
+  equation[index] = equation[index]+".";
 }
 
-// function pairParenth(array){
-//   let starts = [];
-//   let pairs = [];
-//   for(let x=0; x<array.length; x++){
-//     if(array[x] == "("){
-//       starts.push(x);
-//     }
-//     if(array[x] == ")"){
-//       pairs.push([starts.pop(), x]);
-//     }
-//   }
-//   return pairs;
-// }
+function getLastOperandIndex(){
+  for(let x=equation.length-1; x>=0; x--){
+    if(!Number.isNaN(equation[x])){
+      return x;
+    }
+  }
+}
 
-// function calcParenth(pairs){
-//   for(let x=0; x<pairs.length; x++){
-//     let index1 = pairs[x][0];
-//     let index2 = pairs[x][1];
-//     doCalc(index1+1, index2-1);
-//   //   operators.splice(pairs[x][0], 1);
-//   //   operators.splice(pairs[x][1]-1, 1);
-//   //   pairs[x][1]--;
-//   // }
-//   // pairs.forEach(pair => function(){ 
-//   }
-// }
-
-// function doCalc(index1, index2){
-//   let firstNum = equation[index1];
-//   let secNum = equation[index2];
-//   operate(operands[0], firstNum, secNum);
-// }
-
-// function betweenParenth(index1, index2){
-//   let subArray = [];
-//   let spliceMod = 0;
-//   for(let x=index1; x<=index2; x++){
-//     subArray[x] = operators[x];
-//   }
-//   let endParenth = subArray.indexOf(")", index1);
-//   let startParenth = subArray.lastIndexOf("(", endParenth); //breaks on 
-//   //nested (, stable most other cases
-//   // if(startParenth == -1&&endParenth==-1){
-//   //   expo(index1, index2);
-//   // }
-//   // else{
-//   //   betweenParenth(startParenth+1, endParenth-1);
-//   // }
-//   // let startParenth = subArray.indexOf("(", index1);
-//   // let endParenth = subArray.lastIndexOf(")", index2);
-//   // console.log(`looking between: ${startParenth} and ${endParenth} for indices ${index1}-${index2} in ${subArray}; ${operands} | ${operators}`);
-//   if(startParenth>=0&&endParenth>=0){
-//     // operands.splice(index1, 0, "");
-//     // operands.splice(index2-1, 0, "");
-//     // betweenParenth(startParenth+1, endParenth-1);
-//     operators.splice(startParenth, 1);
-//     operators.splice(endParenth-1, 1);
-//     spliceMod += 2;
-//     betweenParenth(startParenth, endParenth-spliceMod);//check for nested ()
-//     betweenParenth(index1, index2-spliceMod);//check for other () remaining
-//   }
-//   // console.log(`eval: ${index1} and ${index2-spliceMod}; ${operands} | ${operators}`);
-//   expo(index1, index2-spliceMod);
-// }
-
-// function expo(index1, index2){
-//     let subArray = [];
-//     let end = operators.length-1;
-//     let spliceMod = 0;
-//     if(index2<end){
-//       end = index2;
-//     }
-//     for(let x=index1; x<=end; x++){
-//       subArray[x] = operators[x];
-//     }
-//     pos = -1;
-//     pos = subArray.findIndex(element => {
-//           let regex = /\^/;
-//           return (element!=null&&(element.search(regex)>=0));
-//     });
-//     if(pos>=0){
-//       // console.log(`Pos: ${pos-2}, Operand1: ${operands[pos-2]}, Operand2: ${operands[pos-1]}`);
-//       ans = operate(operators[pos], operands[pos], operands[pos+1]);
-//       operands.splice(pos, 2, ans);
-//       // operands.splice(pos, 0, "");
-//       operators.splice(pos, 1);
-//       spliceMod++;
-//       expo(index1, index2-spliceMod);
-//       //maybe instead of all the splicing shenanigans I just remove parenths once the internal stuff is done
-//     }
-//     multiplyOrDivide(index1, index2-spliceMod);
-// }
-
-
-// function multiplyOrDivide(index1, index2){
-//   // console.log(`operators: ${operators}, operands: ${operands}`);
-//   // if(operators.length>0){
-//     let subArray = [];
-//     let spliceMod = 0;
-//     let end = operators.length-1;
-//     if(index2<end){
-//       end = index2;
-//     }
-//     for(let x=index1; x<=end; x++){
-//       subArray[x] = operators[x];
-//     }
-//     pos = -1;
-//     pos = subArray.findIndex(element => {
-//           let regex = /\*|\//;
-//           return (element!=null&&(element.search(regex)>=0));
-//     });
-//     if(pos>=0){
-//       // ans = operate(operators[pos], operands[pos], operands[pos-1]);
-//       ans = operate(operators[pos], operands[pos], operands[pos+1]);
-//       operands.splice(pos, 2, ans);
-//       operators.splice(pos, 1);
-//       spliceMod++;
-//       multiplyOrDivide(index1, index2-spliceMod);
-//     }
-//     addOrSubtract(index1, index2-spliceMod);
-//   // }
-// }
-
-// function addOrSubtract(index1, index2){
-//   //console.log(`operators: ${operators}, operands: ${operands}`);
-//   // if(operators.length>0){
-//     let subArray = [];
-//     let spliceMod = 0;
-//     let end = operators.length-1;
-//     if(index2<end){
-//       end = index2;
-//     }
-//     for(let x=index1; x<=end; x++){
-//       subArray[x] = operators[x];
-//     }
-//     pos = -1;
-//     pos = subArray.findIndex(element => {
-//           let regex = /\+|\-/;
-//           return (element!=null&&(element.search(regex)>=0));
-//     });
-//     // console.log(`between: ${index1} and ${index2}; ${operands} ${operators}`);
-//     if(pos>=0){
-//       // ans = operate(operators[pos], operands[pos], operands[pos-1]);
-//       ans = operate(operators[pos], operands[pos], operands[pos+1]);
-//       operands.splice(pos, 2, ans);
-//       operators.splice(pos, 1);
-//       spliceMod++;
-//       addOrSubtract(index1, index2-spliceMod);
-//     }
-//   // }
-//   // else{
-//   //   return;
-//   // }
-// }
-
-// function equals(){
-//   let interrim = history.textContent;
-//   betweenParenth(0, operators.length-1); //initial try
-//   //calcParenth(pairParenth(equation));
-//   // console.log(`Ending rands: ${operands}, ending rators: ${operators}`);
-//   let finalIndex = operands.findIndex(element => element!=null&&""+element>0);
-//   // console.log("finalIndex: "+finalIndex);
-//   if(operands.length==0){
-//     history.textContent = current.textContent+" = "+"Error"+"\n"+ interrim;
-//     current.textContent = "";
-//   }
-//   else{
-//     history.textContent = current.textContent+" = "+operands[finalIndex]+"\n"+ interrim;
-//     current.textContent = operands[finalIndex];
-//     oldNumberPresent = true;
-//   }
-//   // history.textContent = current.textContent+" = "+operands[1]+"\n"+ interrim;
-//   // current.textContent = operands[1];
-//   // console.log(`operators: ${operators}, operands: ${operands}`);
-//   //console.log(operands);
-//   // pos = -1;
-//   // pos = textArray.findIndex(element => {
-//   //      let regex = /\^/;
-//   //      return (element.search(regex)>=0);
-//   // });
-//   // if(pos>=0){
-
-//   // }
-//   // for(let x=0; x<operators.length; x++){
-
-//   // }
-//   // let curText = current.textContent;
-//   // let textArray = curText.split(" ");
-//   // let pos = textArray.findIndex(element => {
-//   //   let regex = /\*|\/|\-|\+|\^/g;
-//   //   return (element.search(regex)>=0);
-//   // });
-//   // operate(textArray[pos], Number(textArray[pos-1]), Number(textArray[pos+1]));
-//   equation.splice(0, 0, "(");
-//   equation.push(")");
-//   console.log(equation);
-//   betterCalc();
-//   console.log(equation);
-// }
-
-function updateOutput(newText){
-  current.textContent += newText;
+function updateOutput(newText, fromEquals){
+  if(!fromEquals){
+    current.textContent = current.textContent+newText;
+  }
+  else{
+    let outputDiv = document.createElement("div");
+    outputDiv.style.borderStyle = "none";
+    outputDiv.style.margin = "0px";
+    outputDiv.style.padding = "0px";
+    outputDiv.textContent = current.textContent+" = "+newText;
+    history.append(outputDiv);
+    if(newText==="Error"){
+      current.textContent = "";
+    }
+    else{
+      current.textContent = newText;
+      oldNumberPresent = true;
+    }
+  }
 }
 
 function operate(operator, num1, num2){
-  // let newLine = current.textContent;
+  let decNum1 = numberDecimalPlaces(num1);
+  let decNum2 = numberDecimalPlaces(num2);
+  let tempMult = 1;
+  if(decNum1>0||decNum2>0){
+    if(decNum1>decNum2){
+      tempMult = Math.pow(10, decNum1);
+    }
+    else{
+      tempMult = Math.pow(10, decNum2);
+    }
+  }
+  num1 *= tempMult;
+  num2 *= tempMult;
   switch(operator){
     case "^":
-      return Math.pow(num1,num2);
+      num2 = num2/tempMult;
+      return (Math.pow(num1,num2))/Math.pow(tempMult, num2);
     case "*":
-      return num1*num2;
+      return (num1*num2)/(tempMult*tempMult);
     case "/":
       return textContent = num1/num2;
     case "+":
-      return num1+num2;
+      return (num1+num2)/tempMult;
     case "-":
-      return num1-num2;
+      return (num1-num2)/tempMult;
     default:
-      console.log("error on operator");
       return "error";
   }
-  // newLine += " = "+current.textContent;
-  // history.textContent = newLine+"\n"+history.textContent;
-  // oldNumberPresent = true;
-  // let newLine = current.textContent;
-  // switch(operator){
-  //   case "^":
-  //     current.textContent = num1^num2;
-  //     break;
-  //   case "*":
-  //     current.textContent = num1*num2;
-  //     break;
-  //   case "/":
-  //     current.textContent = num1/num2;
-  //     break;
-  //   case "+":
-  //     current.textContent = num1+num2;
-  //     break;
-  //   case "-":
-  //     current.textContent = num1-num2;
-  //     break;
-  //   default:
-  //     console.log("error on operator");
-  // }
-  // newLine += " = "+current.textContent;
-  // history.textContent = newLine+"\n"+history.textContent;
-  // oldNumberPresent = true;
 }
-
-// function defineEquation(){
-//   let array = current.textContent.trimEnd().split(/\s|(\()|(\))|(\^)/).filter(el => el!=null&&el.length>0);
-//   equation = array;
-//   let y = 0;
-//   let z = 0;
-//   for(let x=0; x<array.length; x++){
-//     let arrayPos = array[x];
-//     if(arrayPos.charAt(0)=="-"&&arrayPos.length>1){
-//       operands[y] = Number(arrayPos.substring(1))*(-1);
-//       y++;
-//     }
-//     else{
-//       let regexResult = arrayPos.search(/\*|\/|\-|\+|\^|\(|\)/g);
-//       if(regexResult>=0){
-//         operators[z]= arrayPos;
-//         z++;
-//       }
-//       else{
-//         operands[y] = Number(arrayPos.substring(0));
-//         y++;
-//       }
-//     }
-//   }
-//   for(let x=numOpenParenth; x>0; x--){
-//     operators.push(")");
-//   }
-// }
 
 function defineEquation(){
   equation = current.textContent.trimEnd().split(/\s|(\()|(\))|(\^)/).filter(el => el!=null&&el.length>0);
@@ -496,23 +243,46 @@ function doCalc(array, value){
 }
 
 function equals(){
-  let interrim = history.textContent;
-  equation.splice(0, 0, "(");
-  equation.push(")");
-  console.log(equation);
-  betterCalc();
-  console.log(equation);
-  let finalIndex = equation.findIndex(element => element!=null&&""+element>0);
-  if(equation.length==0){
-    history.textContent = current.textContent+" = "+"Error"+"\n"+ interrim;
-    current.textContent = "";
-  }
-  else{
-    if(!Number.isInteger(equation[finalIndex])){
-      equation[finalIndex] = equation[finalIndex].toFixed(2);
+  if(checkForUnmatchParenth()){
+    equation.splice(0, 0, "(");
+    equation.push(")");
+    betterCalc();
+    let finalIndex = equation.findIndex(element => element!=null);
+    if(equation.length==0){
+      updateOutput("0", true);
+      needsOperand = false;
     }
-    history.textContent = current.textContent+" = "+equation[finalIndex]+"\n"+ interrim;
-    current.textContent = equation[finalIndex];
-    oldNumberPresent = true;
+    else{
+      decimalPossible = true;
+      if(!Number.isInteger(Number(equation[finalIndex]))){
+        if(numberDecimalPlaces(equation[finalIndex])>5){
+          equation[finalIndex] = equation[finalIndex].toFixed(5);
+        }
+        decimalPossible = false;
+      }
+      if(Number.isNaN(equation[finalIndex])){
+        updateOutput("Error", true);
+      }
+      else{
+        updateOutput(equation[finalIndex], true);
+      }
+    }
   }
+}
+
+function checkForUnmatchParenth(){
+  while(numOpenParenth>0){
+    equation.push(")");
+    numOpenParenth--;
+    updateOutput(")");
+  }
+  return equation.length>0;
+}
+
+function numberDecimalPlaces(num){
+  let finalVal = num.toString();
+  if(finalVal.indexOf(".")!=-1){
+    return finalVal.length-1-finalVal.indexOf(".");
+  }
+  return -1;
 }

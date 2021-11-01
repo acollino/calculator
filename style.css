@@ -40,7 +40,12 @@ html{
 
 #output-history{
   flex: 1 1 auto;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  display: flex;
+  flex-direction:column-reverse;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .central-buttons-container{
