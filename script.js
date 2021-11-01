@@ -1,4 +1,4 @@
-const calcButtons = document.querySelectorAll(".buttons-container button");
+const calcButtons = document.querySelectorAll(".buttons-container .button");
 const backButton = document.querySelector("#backspace");
 const currButton = document.querySelector("#current-button")
 const allButton = document.querySelector("#all-button");;
@@ -41,77 +41,85 @@ allButton.addEventListener("click", function(e){
   equation = [];
 })
 
-calcButtons.forEach(button => {
-  button.addEventListener("click", function(e){
-    let buttonText = button.textContent;
-    let textToAdd = "";
-    if(isNaN(Number(buttonText))){
-      if(buttonText==="("){
-        if(oldNumberPresent){
-          current.textContent ="("+current.textContent;
-        }
-        else{
-          textToAdd = "(";
-        }
-        numOpenParenth++;
-        decimalPossible = true;
-      }
-      else if(buttonText==="="){
-        defineEquation();
-        equals();
-      }
-      else if(buttonText===")"){
-        if(numOpenParenth>0){
-          textToAdd = ")";
-          numOpenParenth--;
-          decimalPossible = true;
-        }
-      }
-      else if(buttonText==="."){
-        if(decimalPossible){
-          if(needsOperand||needsOperandNext){
-            updateOutput("0");
-          }
-          defineEquation();
-          decimalPossible = false;
-          makeDecimal();
-          textToAdd = ".";
-          oldNumberPresent = false;
-        }
+function buttonActivate(e){
+  let buttonText = "";
+  let textToAdd = "";
+  if(e.type==="click"){
+    buttonText = e.target.textContent;
+  }
+  if(e.type==="keyup"){
+    buttonText = e.key;
+  }
+  if(isNaN(Number(buttonText))){
+    if(buttonText==="("){
+      if(oldNumberPresent){
+        current.textContent ="("+current.textContent;
       }
       else{
-        if(needsOperandNext){
-          removeOperator();
-        }
-        if(needsOperand){
-          updateOutput("0");
-          needsOperand = false;
-        }
-        textToAdd = " "+buttonText+" ";
-        if(buttonText==="^"){
-          textToAdd = "^";
-        }
+        textToAdd = "(";
+      }
+      numOpenParenth++;
+      decimalPossible = true;
+    }
+    else if(buttonText==="="||buttonText==="Enter"){
+      defineEquation();
+      equals();
+    }
+    else if(buttonText===")"){
+      if(numOpenParenth>0){
+        textToAdd = ")";
+        numOpenParenth--;
         decimalPossible = true;
-        needsOperandNext = true;
+      }
+    }
+    else if(buttonText==="."){
+      if(decimalPossible){
+        if(needsOperand||needsOperandNext){
+          updateOutput("0");
+        }
+        defineEquation();
+        decimalPossible = false;
+        makeDecimal();
+        textToAdd = ".";
         oldNumberPresent = false;
       }
     }
-    else{
-      textToAdd = buttonText;
-      if(oldNumberPresent){
-        current.textContent = "";
-        oldNumberPresent = false;
+    else if(buttonText==="^"||buttonText==="*"||buttonText==="/"||buttonText==="+"||buttonText==="-"){
+      if(needsOperandNext){
+        removeOperator();
       }
       if(needsOperand){
+        updateOutput("0");
         needsOperand = false;
       }
-      if(!needsOperand&&needsOperandNext){
-        needsOperandNext = false;
+      textToAdd = " "+buttonText+" ";
+      if(buttonText==="^"){
+        textToAdd = "^";
       }
+      decimalPossible = true;
+      needsOperandNext = true;
+      oldNumberPresent = false;
     }
-    updateOutput(textToAdd);
-  });
-});
+  }
+  else{
+    textToAdd = buttonText;
+    if(oldNumberPresent){
+      current.textContent = "";
+      oldNumberPresent = false;
+    }
+    if(needsOperand){
+      needsOperand = false;
+    }
+    if(!needsOperand&&needsOperandNext){
+      needsOperandNext = false;
+    }
+  }
+  updateOutput(textToAdd);
+}
+
+calcButtons.forEach(button => button.addEventListener("click", buttonActivate));
+
+document.addEventListener("keyup", buttonActivate);
 
 function removeOperator(){
   let curText = current.textContent.trim();

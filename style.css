@@ -57,10 +57,19 @@ html{
   gap: 20px;
 }
 
-.central-buttons-container button{
-  font-size: 18px;
+.button{
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  background-color: beige;
   font-weight: bold;
+  border-style: solid;
   border-radius: 10px;
+}
+
+.central-buttons-container .button{
+  font-size: 18px;
   width: 90px;
   height: 48px;
 }
@@ -77,12 +86,10 @@ html{
   padding: 20px;
 }
 
-.buttons-container button{
+.buttons-container .button{
   height: 70px;
   width: 70px;
   font-size: 28px;
-  font-weight: bold;
-  border-radius: 10px;
 }
 
 #equals{
