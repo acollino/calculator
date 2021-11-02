@@ -66,12 +66,17 @@ html{
   font-weight: bold;
   border-style: solid;
   border-radius: 10px;
+  transition: all 0.07s;
 }
 
 .central-buttons-container .button{
   font-size: 18px;
   width: 90px;
   height: 48px;
+}
+
+.central-buttons-container .button:active{
+  background-color: rgb(184, 184, 130);
 }
 
 .buttons-container{
@@ -92,7 +97,11 @@ html{
   font-size: 28px;
 }
 
-#equals{
+.equals{
   flex-grow: 0.5;
-  flex-basis: 140px;
+  flex-basis: 150px;
+}
+
+.active{
+  background-color: rgb(184, 184, 130);
 }

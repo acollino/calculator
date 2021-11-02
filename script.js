@@ -1,17 +1,15 @@
 const calcButtons = document.querySelectorAll(".buttons-container .button");
-const backButton = document.querySelector("#backspace");
+const backButton = document.querySelector("#Backspace");
 const currButton = document.querySelector("#current-button")
 const allButton = document.querySelector("#all-button");;
 const current = document.querySelector("#output-current");
 const history = document.querySelector("#output-history");
 
 let equation = [];
-let currentOperand = "";
 let needsOperand = true;
 let needsOperandNext = false;
 let oldNumberPresent = false;
 let decimalPossible = true;
-let currentNegative = false;
 let numOpenParenth = 0;
 
 backButton.addEventListener("click", function(e){
@@ -24,10 +22,9 @@ currButton.addEventListener("click", function(e){
   needsOperandNext = false;
   oldNumberPresent = false;
   decimalPossible = true;
-  currentNegative = false;
   numOpenParenth = 0;
   equation = [];
-})
+});
 
 allButton.addEventListener("click", function(e){
   current.textContent = "";
@@ -36,20 +33,61 @@ allButton.addEventListener("click", function(e){
   needsOperandNext = false;
   oldNumberPresent = false;
   decimalPossible = true;
-  currentNegative = false;
   numOpenParenth = 0;
   equation = [];
+});
+
+document.addEventListener("transitionend", function(e){
+  let button = e.target;
+  button.classList.remove("active");
 })
 
 function buttonActivate(e){
   let buttonText = "";
   let textToAdd = "";
+  let button;
   if(e.type==="click"){
+    button = e.target;
     buttonText = e.target.textContent;
   }
   if(e.type==="keyup"){
     buttonText = e.key;
+    switch(buttonText){
+      case "(": 
+        button = document.querySelector("#button-open");
+        break;
+      case ")":
+        button = document.querySelector("#button-close");
+        break;
+      case "^":
+        button = document.querySelector("#button-caret");
+        break;
+      case "/":
+        button = document.querySelector("#button-divide");
+        break;
+      case "*":
+        button = document.querySelector("#button-mult");
+        break;
+      case "-":
+        button = document.querySelector("#button-minus");
+        break;
+      case "+":
+        button = document.querySelector("#button-plus");
+        break;
+      case ".":
+        button = document.querySelector("#button-dec");
+        break;
+      case "=":
+      case "Enter":
+        button = document.querySelector("#button-equals");
+        break;
+      default:
+        if(Number(buttonText)!=NaN){
+          button = document.querySelector("#button-"+buttonText);
+        }
+    }
   }
+  button.classList.add("active");
   if(isNaN(Number(buttonText))){
     if(buttonText==="("){
       if(oldNumberPresent){
