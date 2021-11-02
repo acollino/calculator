@@ -99,8 +99,8 @@ body{
   height: 48px;
 }
 
-.central-buttons-container .button:active{
-  background-color: rgb(88, 87, 87);
+.button:active{
+  background-color: rgb(153, 153, 153);
 }
 
 .calc-buttons-container{
@@ -129,5 +129,5 @@ body{
 }
 
 .active{
-  background-color: rgb(88, 87, 87);
+  background-color: rgb(153, 153, 153);
 }

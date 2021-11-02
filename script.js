@@ -1,4 +1,4 @@
-const calcButtons = document.querySelectorAll(".buttons-container .button");
+const calcButtons = document.querySelectorAll(".calc-buttons-container .button");
 const backButton = document.querySelector("#Backspace");
 const currButton = document.querySelector("#current-button")
 const allButton = document.querySelector("#all-button");;
@@ -56,7 +56,7 @@ function buttonActivate(e){
     button = e.target;
     buttonText = e.target.textContent;
   }
-  if(e.type==="keyup"){
+  else if(e.type==="keyup"){
     buttonText = e.key;
     switch(buttonText){
       case "(": 
@@ -195,6 +195,7 @@ function getLastOperandIndex(){
 }
 
 function updateOutput(newText, fromEquals){
+  console.log("Updating with "+newText);
   if(!fromEquals){
     current.textContent = current.textContent+newText;
   }
@@ -307,6 +308,10 @@ function doCalc(array, value){
     newVal = operate(value, Number(updatedArray[index-1]), Number(updatedArray[index+1]));
     updatedArray.splice(index-1, 3, newVal);
   }
+  else if(index===0){
+    newVal = operate("Error", 1, 1);
+    updatedArray.splice(index, 2, newVal);
+  }
   return updatedArray;
 }
 
@@ -316,6 +321,7 @@ function equals(){
     equation.splice(0, 0, "(");
     equation.push(")");
     betterCalc();
+    console.log("equals "+equation);
     let finalIndex = equation.findIndex(element => element!=null);
     if(equation.length==0){
       updateOutput("0", true);
@@ -333,12 +339,14 @@ function equals(){
         updateOutput("Error", true);
         oldNumberPresent = false;
         needsOperand = true;
+        return;
       }
       if(divideByZero){
         updateOutput("Cannot divide by 0", true);
         oldNumberPresent = false;
         needsOperand = true;
         divideByZero = false;
+        return;
       }
       else{
         updateOutput(equation[finalIndex], true);
