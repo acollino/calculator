@@ -370,7 +370,7 @@ function checkForMissingMult(){
   let currentValue;
   for(let x=1; x<equation.length; x++){
     currentValue = equation[x];
-    if(!Number.isNaN(Number(priorValue))&&currentValue==="("||priorValue===")"&&!Number.isNaN(Number(currentValue))){
+    if(!Number.isNaN(Number(priorValue))&&currentValue==="("||priorValue===")"&&!Number.isNaN(Number(currentValue))||priorValue===")"&&currentValue==="("){
       equation.splice(x, 0, "*");
       x++;
     }
