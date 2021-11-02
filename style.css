@@ -39,7 +39,8 @@ html{
 }
 
 #output-history{
-  flex: 1 1 auto;
+  height: 385px;
+  flex: 0 0 auto;
   white-space: pre-wrap;
   overflow-wrap: break-word;
   display: flex;

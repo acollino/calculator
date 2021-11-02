@@ -10,31 +10,37 @@ let needsOperand = true;
 let needsOperandNext = false;
 let oldNumberPresent = false;
 let decimalPossible = true;
+let divideByZero = false;
 let numOpenParenth = 0;
 
-backButton.addEventListener("click", function(e){
+backButton.addEventListener("click", backspace);
 
-})
+function backspace(){
+  if(needsOperandNext){
+    removeOperator();
+    decimalPossible = true;
+  }
+  else if(current.textContent.length>0){
+    current.textContent = current.textContent.substring(0, current.textContent.length-1);
+  }
+}
 
-currButton.addEventListener("click", function(e){
+currButton.addEventListener("click", clearCurrent);
+
+function clearCurrent(){
   current.textContent = "";
   needsOperand = true;
   needsOperandNext = false;
   oldNumberPresent = false;
   decimalPossible = true;
+  divideByZero = false;
   numOpenParenth = 0;
   equation = [];
-});
+}
 
 allButton.addEventListener("click", function(e){
-  current.textContent = "";
-  history.textContent = "";//removeChildren?
-  needsOperand = true;
-  needsOperandNext = false;
-  oldNumberPresent = false;
-  decimalPossible = true;
-  numOpenParenth = 0;
-  equation = [];
+  clearCurrent();
+  history.textContent = "";
 });
 
 document.addEventListener("transitionend", function(e){
@@ -81,9 +87,16 @@ function buttonActivate(e){
       case "Enter":
         button = document.querySelector("#button-equals");
         break;
+      case "Backspace":
+        backspace();
+        button = document.querySelector("#Backspace");
+        break;
       default:
-        if(Number(buttonText)!=NaN){
+        if(!isNaN(Number(buttonText))){
           button = document.querySelector("#button-"+buttonText);
+        }
+        else{
+          return;
         }
     }
   }
@@ -108,6 +121,9 @@ function buttonActivate(e){
         textToAdd = ")";
         numOpenParenth--;
         decimalPossible = true;
+        if(oldNumberPresent===true){
+          oldNumberPresent = false;
+        }
       }
     }
     else if(buttonText==="."){
@@ -162,10 +178,7 @@ document.addEventListener("keyup", buttonActivate);
 function removeOperator(){
   let curText = current.textContent.trim();
   curText = curText.substring(0, curText.length-1);
-  if(curText.lastIndexOf(" ")==curText.length-2){
-    curText += " ";
-  }
-  current.textContent = curText;
+  current.textContent = curText.trim();;
 }
 
 function makeDecimal(){
@@ -188,17 +201,22 @@ function updateOutput(newText, fromEquals){
   else{
     let outputDiv = document.createElement("div");
     outputDiv.style.borderStyle = "none";
-    outputDiv.style.margin = "0px";
     outputDiv.style.padding = "0px";
     outputDiv.textContent = current.textContent+" = "+newText;
     history.append(outputDiv);
-    if(newText==="Error"){
+    checkOutputHeight();
+    if(isNaN(Number(newText))){
       current.textContent = "";
     }
     else{
       current.textContent = newText;
-      oldNumberPresent = true;
     }
+  }
+}
+
+function checkOutputHeight(){
+  if(history.firstElementChild.getBoundingClientRect().bottom>history.getBoundingClientRect().bottom){
+    history.firstElementChild.remove();
   }
 }
 
@@ -223,13 +241,17 @@ function operate(operator, num1, num2){
     case "*":
       return (num1*num2)/(tempMult*tempMult);
     case "/":
-      return textContent = num1/num2;
+      if(num2===0){
+        divideByZero = true;
+        return Infinity;
+      }
+      else return textContent = num1/num2;
     case "+":
       return (num1+num2)/tempMult;
     case "-":
       return (num1-num2)/tempMult;
     default:
-      return "error";
+      return "Error";
   }
 }
 
@@ -258,19 +280,19 @@ function findInnerMostParenth(){
 
 function orderOps(array){
   let updatedArray = array;
-  while(array.indexOf("^")!=-1){
+  while(updatedArray.indexOf("^")!=-1){
     updatedArray = doCalc(updatedArray, "^");
   }
-  while(array.indexOf("*")!=-1){
+  while(updatedArray.indexOf("*")!=-1){
     updatedArray = doCalc(updatedArray, "*");
   }
-  while(array.indexOf("/")!=-1){
+  while(updatedArray.indexOf("/")!=-1){
     updatedArray = doCalc(updatedArray, "/");
   }
-  while(array.indexOf("+")!=-1){
+  while(updatedArray.indexOf("+")!=-1){
     updatedArray = doCalc(updatedArray, "+");
   }
-  while(array.indexOf("-")!=-1){
+  while(updatedArray.indexOf("-")!=-1){
     updatedArray = doCalc(updatedArray, "-");
   }
   return updatedArray;
@@ -289,6 +311,7 @@ function doCalc(array, value){
 }
 
 function equals(){
+  checkForMissingMult();
   if(checkForUnmatchParenth()){
     equation.splice(0, 0, "(");
     equation.push(")");
@@ -308,9 +331,18 @@ function equals(){
       }
       if(Number.isNaN(equation[finalIndex])){
         updateOutput("Error", true);
+        oldNumberPresent = false;
+        needsOperand = true;
+      }
+      if(divideByZero){
+        updateOutput("Cannot divide by 0", true);
+        oldNumberPresent = false;
+        needsOperand = true;
+        divideByZero = false;
       }
       else{
         updateOutput(equation[finalIndex], true);
+        oldNumberPresent = true;
       }
     }
   }
@@ -331,4 +363,17 @@ function numberDecimalPlaces(num){
     return finalVal.length-1-finalVal.indexOf(".");
   }
   return -1;
+}
+
+function checkForMissingMult(){
+  let priorValue = equation[0]
+  let currentValue;
+  for(let x=1; x<equation.length; x++){
+    currentValue = equation[x];
+    if(!Number.isNaN(Number(priorValue))&&currentValue==="("||priorValue===")"&&!Number.isNaN(Number(currentValue))){
+      equation.splice(x, 0, "*");
+      x++;
+    }
+    priorValue = equation[x];
+  }
 }
