@@ -3,7 +3,13 @@ html{
   padding: 0; */
   box-sizing: border-box;
   /* background-color: rgb(86, 124, 124); */
-  background-color: rgb(115, 133, 133);
+  background-color: rgb(54, 54, 54);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+body{
+  display: flex;
+  justify-content: space-around;
 }
 
 .rounded{
@@ -11,6 +17,7 @@ html{
 }
 
 .calc-container{
+  width: 740px;
   display: flex;
   justify-content: space-between;
   padding: 25px;
@@ -22,11 +29,14 @@ html{
   justify-content: space-between;
   width: 300px;
   flex-shrink: 0;
+  color: white;
+  letter-spacing: 1px;
+  font-weight: bold;
 }
 
 .output-container div{
-  background-color: rgb(139, 231, 224);
-  border-color: darkslategray;
+  background-color: rgb(50, 49, 63);
+  border-color: black;
   border-style: solid;
   padding: 20px;
   font-size: 20px;
@@ -34,13 +44,14 @@ html{
 }
 
 #output-current{
-  height: 23px;
+  box-sizing: border-box;
+  height: 100px;
   flex: 0 0 auto;
 }
 
 #output-history{
-  height: 385px;
-  flex: 0 0 auto;
+  /* height: 454px; */
+  flex: 1 0 auto;
   white-space: pre-wrap;
   overflow-wrap: break-word;
   display: flex;
@@ -49,11 +60,18 @@ html{
   gap: 10px;
 }
 
-.central-buttons-container{
-  background-color: rgb(73, 105, 143);
+.buttons-container{
   display: flex;
   flex-direction: column;
+}
+
+.central-buttons-container{
+  background-color: rgb(75, 73, 104);
+  display: flex;
+  border-color: black;
+  border-style: solid;
   align-items: center;
+  justify-content: space-between;
   padding: 20px;
   gap: 20px;
 }
@@ -63,11 +81,16 @@ html{
   text-align: center;
   justify-content: center;
   align-items: center;
-  background-color: beige;
+  background-color: rgb(28, 28, 37);
+  color: white;
   font-weight: bold;
   border-style: solid;
   border-radius: 10px;
   transition: all 0.07s;
+}
+
+.button:hover{
+  background-color: rgb(73, 73, 73);
 }
 
 .central-buttons-container .button{
@@ -77,11 +100,13 @@ html{
 }
 
 .central-buttons-container .button:active{
-  background-color: rgb(184, 184, 130);
+  background-color: rgb(88, 87, 87);
 }
 
-.buttons-container{
-  background-color: cadetblue;
+.calc-buttons-container{
+  background-color: rgb(75, 73, 104);
+  border-color: black;
+  border-style: solid;
   flex-shrink: 0;
   width: 400px;
   display: flex;
@@ -92,7 +117,7 @@ html{
   padding: 20px;
 }
 
-.buttons-container .button{
+.calc-buttons-container .button{
   height: 70px;
   width: 70px;
   font-size: 28px;
@@ -104,5 +129,5 @@ html{
 }
 
 .active{
-  background-color: rgb(184, 184, 130);
+  background-color: rgb(88, 87, 87);
 }
