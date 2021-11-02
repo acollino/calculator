@@ -195,7 +195,6 @@ function getLastOperandIndex(){
 }
 
 function updateOutput(newText, fromEquals){
-  console.log("Updating with "+newText);
   if(!fromEquals){
     current.textContent = current.textContent+newText;
   }
@@ -321,7 +320,6 @@ function equals(){
     equation.splice(0, 0, "(");
     equation.push(")");
     betterCalc();
-    console.log("equals "+equation);
     let finalIndex = equation.findIndex(element => element!=null);
     if(equation.length==0){
       updateOutput("0", true);

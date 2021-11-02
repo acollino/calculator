@@ -50,8 +50,9 @@ body{
 }
 
 #output-history{
-  /* height: 454px; */
-  flex: 1 0 auto;
+  box-sizing: border-box;
+  height: 506px;
+  flex: 0 0 auto;
   white-space: pre-wrap;
   overflow-wrap: break-word;
   display: flex;
