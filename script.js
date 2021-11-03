@@ -16,12 +16,38 @@ let numOpenParenth = 0;
 backButton.addEventListener("click", backspace);
 
 function backspace(){
-  if(needsOperandNext){
+  console.log("on start, current is|"+current.textContent+"|");
+  let charEnd = current.textContent.substring(current.textContent.length-1);
+  // if(needsOperandNext&&!needsOperand){
+    if(charEnd===" "){
+    console.log("remove operator");
     removeOperator();
     decimalPossible = true;
   }
   else if(current.textContent.length>0){
+    console.log("remove non-operator");
+    if(charEnd===")"){
+      numOpenParenth++;
+    }
+    else if(charEnd==="("){
+      numOpenParenth--;
+      needsOperand = false;
+    }
+    else if(charEnd==="."){
+      decimalPossible = true;
+    }
     current.textContent = current.textContent.substring(0, current.textContent.length-1);
+    if(current.textContent.length>0){
+      console.log("not clearing");
+      charEnd = current.textContent.substring(current.textContent.length-1);
+      if(charEnd===" "){
+        needsOperandNext = true;
+      }
+    }
+    else{
+      console.log("should be clearing");
+      clearCurrent();
+    }
   }
 }
 
@@ -111,6 +137,9 @@ function buttonActivate(e){
       }
       numOpenParenth++;
       decimalPossible = true;
+      if(!oldNumberPresent){
+        needsOperand = true;
+      }
     }
     else if(buttonText==="="||buttonText==="Enter"){
       defineEquation();
@@ -283,17 +312,25 @@ function orderOps(array){
   while(updatedArray.indexOf("^")!=-1){
     updatedArray = doCalc(updatedArray, "^");
   }
-  while(updatedArray.indexOf("*")!=-1){
-    updatedArray = doCalc(updatedArray, "*");
+  while(updatedArray.indexOf("*")!=-1||updatedArray.indexOf("/")!=-1){
+    let operatorA = updatedArray.indexOf("*");
+    let operatorB = updatedArray.indexOf("/");
+    if(operatorB==-1||operatorA>=0&&operatorA<operatorB){
+      updatedArray = doCalc(updatedArray, "*");
+    }
+    else{
+      updatedArray = doCalc(updatedArray, "/");
+    }
   }
-  while(updatedArray.indexOf("/")!=-1){
-    updatedArray = doCalc(updatedArray, "/");
-  }
-  while(updatedArray.indexOf("+")!=-1){
-    updatedArray = doCalc(updatedArray, "+");
-  }
-  while(updatedArray.indexOf("-")!=-1){
-    updatedArray = doCalc(updatedArray, "-");
+  while(updatedArray.indexOf("+")!=-1||updatedArray.indexOf("-")!=-1){
+    let operatorA = updatedArray.indexOf("+");
+    let operatorB = updatedArray.indexOf("-");
+    if(operatorB==-1||(operatorA>=0&&operatorA<operatorB)){
+      updatedArray = doCalc(updatedArray, "+");
+    }
+    else{
+      updatedArray = doCalc(updatedArray, "-");
+    }
   }
   return updatedArray;
 }
@@ -324,6 +361,7 @@ function equals(){
     if(equation.length==0){
       updateOutput("0", true);
       needsOperand = false;
+      oldNumberPresent = true;
     }
     else{
       decimalPossible = true;
