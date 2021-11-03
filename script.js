@@ -16,38 +16,66 @@ let numOpenParenth = 0;
 backButton.addEventListener("click", backspace);
 
 function backspace(){
-  console.log("on start, current is|"+current.textContent+"|");
   let charEnd = current.textContent.substring(current.textContent.length-1);
-  // if(needsOperandNext&&!needsOperand){
-    if(charEnd===" "){
-    console.log("remove operator");
+  if(charEnd===" "){
     removeOperator();
-    decimalPossible = true;
   }
   else if(current.textContent.length>0){
-    console.log("remove non-operator");
-    if(charEnd===")"){
-      numOpenParenth++;
-    }
-    else if(charEnd==="("){
-      numOpenParenth--;
-      needsOperand = false;
-    }
-    else if(charEnd==="."){
-      decimalPossible = true;
+    switch(charEnd){
+      case ".":
+        decimalPossible = true;
+        break;
+      case "^":
+        needsOperandNext = false;
+        break;
+      case ")":
+        numOpenParenth--;
+        break;
+      case "(":
+        numOpenParenth--;
+        break;
+      default:
+        break;
     }
     current.textContent = current.textContent.substring(0, current.textContent.length-1);
-    if(current.textContent.length>0){
-      console.log("not clearing");
-      charEnd = current.textContent.substring(current.textContent.length-1);
-      if(charEnd===" "){
+  }
+  checkEndingChar();
+    // if(charEnd===")"){
+    //   numOpenParenth++;
+    // }
+    // else if(charEnd==="("){
+    //   numOpenParenth--;
+    // }
+    // else if(charEnd==="."){
+    //   decimalPossible = true;
+    // }
+    // else if(charEnd==="^"){
+    //   needsOperandNext = false;
+    // }
+    // current.textContent = current.textContent.substring(0, current.textContent.length-1);
+}
+
+function checkEndingChar(){
+  if(current.textContent.length>0){
+    let charEnd = current.textContent.substring(current.textContent.length-1);
+    switch(charEnd){
+      case " ":
+      case "^":
         needsOperandNext = true;
-      }
+        break;
+      // case ")":
+      //   needsOperandNext = false;
+      //   break;
+      case "(":
+        needsOperand = true;
+        break;
+      default:
+        needsOperandNext = false;
+        break;
     }
-    else{
-      console.log("should be clearing");
-      clearCurrent();
-    }
+  }
+  else{
+    clearCurrent();
   }
 }
 
@@ -82,7 +110,7 @@ function buttonActivate(e){
     button = e.target;
     buttonText = e.target.textContent;
   }
-  else if(e.type==="keyup"){
+  else if(e.type==="keydown"){
     buttonText = e.key;
     switch(buttonText){
       case "(": 
@@ -126,7 +154,7 @@ function buttonActivate(e){
         }
     }
   }
-  button.classList.add("active");
+  button.classList.toggle("active");
   if(isNaN(Number(buttonText))){
     if(buttonText==="("){
       if(oldNumberPresent){
@@ -159,6 +187,12 @@ function buttonActivate(e){
       if(decimalPossible){
         if(needsOperand||needsOperandNext){
           updateOutput("0");
+          if(needsOperandNext){
+            needsOperandNext = false;
+          }
+          if(needsOperand){
+            needsOperand = false;
+          }
         }
         defineEquation();
         decimalPossible = false;
@@ -202,7 +236,7 @@ function buttonActivate(e){
 
 calcButtons.forEach(button => button.addEventListener("click", buttonActivate));
 
-document.addEventListener("keyup", buttonActivate);
+document.addEventListener("keydown", buttonActivate);
 
 function removeOperator(){
   let curText = current.textContent.trim();
@@ -244,7 +278,7 @@ function updateOutput(newText, fromEquals){
 }
 
 function checkOutputHeight(){
-  if(history.firstElementChild.getBoundingClientRect().bottom>history.getBoundingClientRect().bottom){
+  if(history.firstElementChild.getBoundingClientRect().bottom>=history.getBoundingClientRect().bottom){
     history.firstElementChild.remove();
   }
 }
@@ -385,7 +419,7 @@ function equals(){
         return;
       }
       else{
-        updateOutput(equation[finalIndex], true);
+        updateOutput(Number(equation[finalIndex]), true);
         oldNumberPresent = true;
       }
     }
